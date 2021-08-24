@@ -47,12 +47,12 @@ class WiFiDirectBroadcastReceiver(private val manager: WifiP2pManager,
     }
 
     private fun onConnectionChanged(intent: Intent) {
-        val p2pInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO) as WifiP2pInfo
-        val networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO) as NetworkInfo
+        val p2pInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO) as WifiP2pInfo?
+        val networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO) as NetworkInfo?
 
         manager.let { manager ->
 
-            if (networkInfo.isConnected) {
+            if (networkInfo!=null && networkInfo.isConnected) {
 
                 manager.requestConnectionInfo(channel) { info ->
                     // InetAddress from WifiP2pInfo struct.
@@ -74,7 +74,7 @@ class WiFiDirectBroadcastReceiver(private val manager: WifiP2pManager,
             }
         }
 
-        connectionChangedSink?.success(ProtoHelper.create(p2pInfo, networkInfo).toByteArray())
+        connectionChangedSink?.success(ProtoHelper.create(p2pInfo!!, networkInfo!!).toByteArray())
     }
 
     private fun onStateChanged(intent: Intent) {
@@ -90,8 +90,8 @@ class WiFiDirectBroadcastReceiver(private val manager: WifiP2pManager,
     }
 
     private fun onThisDeviceChanged(intent: Intent) {
-        val device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE) as WifiP2pDevice
-        val dev: Protos.WifiP2pDevice = ProtoHelper.create(device)
+        val device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE) as WifiP2pDevice?
+        val dev: Protos.WifiP2pDevice = ProtoHelper.create(device!!)
         thisDeviceChangedSink?.success(dev.toByteArray())
     }
 
